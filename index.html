@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+
+  <!-- semantic ui css files -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/button.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/header.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/form.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/dropdown.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/dropdown.min.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script data-require="jquery@3.2.1" data-semver="3.2.1" src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+
+  <!-- angular -->
+  <script data-require="angular.js@1.4.x" src="https://code.angularjs.org/1.4.12/angular.js" data-semver="1.4.9"></script>
+
+  <!-- cool icons -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
+
+  <!-- google fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Alegreya+Sans+SC|Markazi+Text" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+  <script src="script.js"></script>
+</head>
+
+<body ng-controller="ctrl">
+  <div class="sidebar">
+    <div class="btn-group">
+      <div class="button" ng-show="manager_sidebar" onclick="addRoadForm()"><i class="fas fa-plus-circle"></i> Add Road</div>
+      <div class="button" ng-show="manager_sidebar" onclick="deleteRoadForm()"><i class="fas fa-minus-circle"></i> Delete Road</div>
+      <div class="button" ng-show="manager_sidebar" onclick="addProjectForm()"><i class="fas fa-plus-circle"></i> Add Project</div>
+      <div class="button" ng-show="manager_sidebar" onclick="deleteProjectForm()"><i class="fas fa-minus-circle"></i> Delete Project</div>
+      <div class="button" ng-show="inspector_sidebar || contractor_sidebar" onclick="addProblemForm()"><i class="fas fa-plus-circle"></i> Add Problem</div>
+      <div class="button" ng-show="manager_sidebar" onclick="addWorkForm()"><i class="fas fa-plus-circle"></i> Add Work</div>
+      <div class="button" ng-show="inspector_sidebar" onclick="commentForm()"><i class="fas fa-plus-circle"></i> Add Comment</div>
+      <div class="button" ng-show="manager_sidebar || inspector_sidebar" onclick="searchForm()"><i class="fas fa-search"></i> Search</div>
+      <div class="button" ng-show="manager_sidebar" onclick="archiveForm()"><i class="fas fa-minus-circle"></i> Archive Project</div>
+      <div class="button" ng-show="manager_sidebar || inspector_sidebar" onclick="modifyProjectForm()"><i class="fas fa-edit"></i> Modify Project</div>
+      <div class="button" ng-show="contractor_sidebar" onclick="editSubcontractorForm()"><i class="fas fa-edit"></i> Edit Subcontractor</div>
+      <div class="button" ng-show="manager_sidebar || inspector_sidebar" ng-click="getRoads()"><i class="fas fa-search"></i> Show Roads</div>
+      <div class="button" ng-show="manager_sidebar || inspector_sidebar || contractor_sidebar" ng-click="getProjects()"><i class="fas fa-search"></i> Show Projects</div>
+      <div class="button" ng-show="manager_sidebar" ng-click="getArchivedProjects()"><i class="fas fa-search"></i> Show Archived Projects</div>
+    </div>
+  </div>
+
+  <!-- The modal form for the function add road. -->
+  <div id="modal-add-road">
+    <div id="modal-content-add-road" class="modal-outer-box-shadow">
+      <h2>Add Road</h2>
+      <button class="cancel-btn">&#10006;</button>
+      <form class="add-form">
+        <input type="number" ng-model="id" class="add-details id" value="" placeholder="Id" required/>
+        <input type="text" ng-model="code" class="add-details code" value="" placeholder="Code" required/>
+        <input type="text" ng-model="type" class="add-details type" value="" placeholder="Type" required/>
+        <input type="text" ng-model="section" class="add-details section" value="" placeholder="Section" required/>
+        <input type="text" ng-model="location" class="add-details location" value="" placeholder="Location" required/>
+        <input type="text" ng-model="gps" class="add-details gps" value="" placeholder="GPS" required/>
+
+        <button class="action-btn" ng-click="addRoad()">Add</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- The modal form for the function delete road. -->
+  <div id="modal-delete-road">
+    <div id="modal-content-delete" class="modal-outer-box-shadow">
+      <h2>Delete Road</h2>
+      <button class="cancel-btn">&#10006;</button>
+      <form class="delete-form">
+        <input type="number" ng-model="id" class="add-details id" value="" placeholder="Id" required/>
+        <button class="action-btn" ng-click="deleteRoad()">Delete</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- The modal form for the function delete road. -->
+  <div id="modal-archive-project">
+    <div id="modal-content-archive" class="modal-outer-box-shadow">
+      <h2>Archive Project</h2>
+      <button class="cancel-btn">&#10006;</button>
+      <form class="delete-form">
+        <input type="number" ng-model="id" class="add-details id" value="" placeholder="Id" required/>
+        <button class="action-btn" ng-click="archiveProject()">Delete</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- The modal form for the function add project. -->
+  <div id="modal-add-project">
+    <div id="modal-content-add-project" class="modal-outer-box-shadow">
+      <h2>Add Project</h2>
+      <button class="cancel-btn">&#10006;</button>
+      <form class="add-form">
+        <input type="number" ng-model="id" class="add-details id" value="" placeholder="Id" required/>
+        <input type="number" ng-model="roadid" class="add-details roadid" value="" placeholder="Road Id" required/>
+        <input type="text" ng-model="name" class="add-details name" value="" placeholder="Name" required/>
+        <input type="text" ng-model="status" class="add-details status" value="" placeholder="Status" required/>
+        <input type="text" ng-model="startdate" class="add-details startdate" value="" placeholder="Start Date" required/>
+        <input type="text" ng-model="enddate" class="add-details enddate" value="" placeholder="End Date" required/>
+        <input type="text" ng-model="contractor" class="add-details contractor" value="" placeholder="Contractor" required/>
+        <button class="action-btn" ng-click="addProject()">Add</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- The modal form for the function delete project. -->
+  <div id="modal-delete-project">
+    <div id="modal-content-delete" class="modal-outer-box-shadow">
+      <h2>Delete Project</h2>
+      <button class="cancel-btn">&#10006;</button>
+      <form class="delete-form">
+        <input type="number" ng-model="id" class="add-details id" value="" placeholder="Id" required/>
+
+        <button class="action-btn" ng-click="deleteProject()">Delete</button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- The modal form for the function add problem on project. -->
+    <div id="modal-add-problem">
+      <div id="modal-content-edit" class="modal-outer-box-shadow">
+        <h2>Add Problem</h2>
+        <button class="cancel-btn">&#10006;</button>
+        <form class="add-form">
+          <input type="number" id="id" ng-model="id" class="add-details id" value="" placeholder="Project Id" required/>
+          <input type="text" id="author" ng-model="author" class="add-details author" value="" placeholder="Author" required/>
+          <input type="text" id="problem" ng-model="problem" class="add-details problem" value="" placeholder="Problem" required/>
+          <button class="action-btn" ng-click="addProblem()">Add</button>
+        </form>
+      </div>
+    </div>
+    
+    <!-- The modal form for the function add problem on project. -->
+    <div id="modal-add-work">
+      <div id="modal-content-work" class="modal-outer-box-shadow">
+        <h2>Add Problem</h2>
+        <button class="cancel-btn">&#10006;</button>
+        <form class="add-form">
+          <input type="number" id="id" ng-model="id" class="add-details id" value="" placeholder="Project Id" required/>
+          <input type="text" id="type" ng-model="type" class="add-details type" value="" placeholder="Work Type" required/>
+          <input type="text" id="subcontractor" ng-model="subcontractor" class="add-details subcontractor" value="" placeholder="Subcontractor" required/>
+          <input type="text" id="status" ng-model="status" class="add-details status" value="" placeholder="Status" required/>
+          <button class="action-btn" ng-click="addWork()">Add</button>
+        </form>
+      </div>
+    </div>
+  
+  <!-- The modal form for the function modify works on project. -->
+    <div id="modal-modify-project">
+      <div id="modal-content-edit" class="modal-outer-box-shadow">
+        <h2>Modify Project</h2>
+        <button class="cancel-btn">&#10006;</button>
+        <form class="add-form">
+          <input type="number" id="id" ng-model="id" class="add-details id" value="" placeholder="Project Id" required/>
+          <input type="text" id="status" ng-model="status" class="add-details status" value="" placeholder="Status" required/>
+          <input type="text" id="enddate" ng-model="enddate" class="add-details enddate" value="" placeholder="End Date" required/>
+          <button class="action-btn" ng-click="modifyProject()">Edit</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- The modal form for the function modify works on project. -->
+    <div id="modal-modify-subcontractor">
+      <div id="modal-content-edit" class="modal-outer-box-shadow">
+        <h2>Modify Subcontractor</h2>
+        <button class="cancel-btn">&#10006;</button>
+        <form class="add-form">
+          <input type="number" id="id" ng-model="id" class="add-details id" value="" placeholder="Project Id" required/>
+          <input type="text" id="type" ng-model="type" class="add-details type" value="" placeholder="Work Type" required/>
+          <input type="text" id="subcontractor" ng-model="subcontractor" class="add-details subcontractor" value="" placeholder="Subcontractor" required/>
+          <button class="action-btn" ng-click="modifySubcontractor()">Edit</button>
+        </form>
+      </div>
+    </div>
+
+  <!-- The modal form for the function comment problem on project. -->
+  <div id="modal-comment">
+    <div id="modal-content-comment" class="modal-outer-box-shadow">
+      <h2>Add Comment</h2>
+      <button class="cancel-btn">&#10006;</button>
+      <form class="add-form">
+        <input type="number" ng-model="id" class="add-details id" value="" placeholder="Project Id" required/>
+        <input type="text" ng-model="author" class="add-details author" value="" placeholder="Author" required/>
+        <input type="text" ng-model="comment" class="add-details comment" value="" placeholder="Comment" required/>
+        <button class="action-btn" ng-click="commentForm()">Comment</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="modal-search">
+    <div id="modal-content-search" class="modal-outer-box-shadow">
+      <h2>Search</h2>
+      <button class="cancel-btn">&#10006;</button>
+      <form class="search-form">
+        <div class="ui container search-select">
+          <select name="" ng-model="selectedData" id="road-project-select" class="ui selection dropdown" required>
+              <option value="road">Road</option>
+              <option value="project">Project</option>
+            </select>
+        </div>
+        <div class="ui container search-select">
+          <select ng-if="selectedData==='road'" id="selectedRoadOption" class="ui selection dropdown" required>
+              <option ng-repeat="options in roadOptions">{{ options }}</option>
+            </select>
+          <select ng-if="selectedData==='project'" id="selectedProjectOption" class="ui selection dropdown" required>
+              <option ng-repeat="options in projectOptions">{{ options }}</option>
+            </select>
+        </div>
+
+        <input type="text" ng-model="search" class="add-details" placeholder="Search..." required>
+        <button class="action-btn" ng-click="searchForm()">Search</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="outer_container">
+    <div class="title">
+      <div id="title-track">
+        <div id="login-btn"></div>
+        <h2>TRACK</h2>
+        <button type="button" id="logout-btn">Log Out</button>
+      </div>
+    </div>
+
+    <div class="header">
+      <h1></h1>
+    </div>
+
+    <div class="content">
+
+      <!-- The initial page is the first page visible to the user. They must login in order to access the data management. -->
+
+      <div id="initial-page">
+        <div id="login-confirmation"><span>{{confirmation}}</span></div>
+        <div id="bg-img"></div>
+        <div id="center-text">
+          <p>Manage your road and project information with TRACK
+            <br />
+            <button class="ui black button" onclick="loginForm()">Signup / Login</button>
+          </p>
+        </div>
+        <div id="modal-login">
+          <div id="modal-login-content" class="modal-outer-box-shadow">
+            <div class="form-titles">
+              <div class="signup-title" onclick="signupAlternate()">
+                <h1>Signup</h1>
+              </div><div class="login-title" onclick="loginAlternate()">
+                <h1>Login</h1>
+              </div>
+            </div>
+            <form class="form-container signup-form">
+              <input type="text" placeholder="Username" class="username" ng-model="signup_username" required/>
+              <input type="password" placeholder="Password" class="password" ng-model="signup_password" required/>
+              <div id="dropdown">
+                <select id="dropdown-values">
+                   <option disabled="" selected="">Select your position</option>
+                   <option>manager</option>
+                   <option>inspector</option>
+                   <option>contractor</option>
+                 </select>
+              </div>
+              <div class="signup-btns">
+                <button class="positive ui button" ng-click="checkSignup()">Signup</button>
+                <button class="negative ui button" onclick="closeLoginForm()">Cancel</button>
+              </div>
+            </form>
+
+            <form class="form-container login-form">
+              <input type="text" placeholder="Username" class="username" ng-model="login_username" required/>
+              <input type="password" placeholder="Password" class="password" ng-model="login_password" required/>
+              <div class="login-btns">
+                <button class="positive ui button" ng-click="checkLogin()">Login</button>
+                <button class="negative ui button" onclick="closeLoginForm()">Cancel</button>
+              </div>
+              <div class="login-btns">
+                <button class="positive ui button" ng-click="fillLoginForm('manager')">Manager Credentials</button>
+                <button class="positive ui button" ng-click="fillLoginForm('contractor')">Contractor Credentials</button>
+                <button class="positive ui button" ng-click="fillLoginForm('inspector')">Inspector Credentials</button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- This is the content that is visible once the login has been successful -->
+      <div id="information-display">
+        <div id="road-display">
+          <!-- <div id="content-name">List of Roads</div> -->
+          <div class="road" ng-repeat="road in roads">
+            <div class="road-title">
+              <h2>Road {{ road.ID }}</h2>
+            </div>
+            <div class="modal-road">
+              <div class="modal-content-road modal-outer-box-shadow">
+                <h2>Road {{ road.ID }}</h2>
+                <button class="cancel-btn">&#10006;</button>
+                <div class="roadinfo">
+                  <ul class="roadinfo-list">
+                    <li>
+                      <div class="roadinfo-headers">ID</div>
+                      <div class="roadinfo-id roadinfo-data">{{ road.ID }}</div>
+                    </li>
+                    <li>
+                      <div class="roadinfo-headers">Code</div>
+                      <div class="roadinfo-code roadinfo-data">{{ road.Code }}</div>
+                    </li>
+                    <li>
+                      <div class="roadinfo-headers">Type</div>
+                      <div class="roadinfo-type roadinfo-data">{{ road.Type }}</div>
+                    </li>
+                    <li>
+                      <div class="roadinfo-headers">Section</div>
+                      <div class="roadinfo-section roadinfo-data">{{ road.Section }}</div>
+                    </li>
+                    <li>
+                      <div class="roadinfo-headers">Location</div>
+                      <div class="roadinfo-location roadinfo-data">{{ road.Location }}</div>
+                    </li>
+                    <li>
+                      <div class="roadinfo-headers">GPS</div>
+                      <div class="roadinfo-gps roadinfo-data">{{ road.GPS }}</div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="project-display">
+          <!-- <div id="content-name">List of Projects</div> -->
+          <div class="project" ng-repeat="project in projects">
+            <div class="project-title">
+              <h2>Project {{ project.ID }}</h2>
+            </div>
+            <div class="modal-project">
+              <div class="modal-content-project modal-outer-box-shadow">
+                <h2>Project {{ project.ID }}</h2>
+                <button class="cancel-btn">&#10006;</button>
+                <div class="projectinfo">
+                  <ul class="projectinfo-list">
+                    <li>
+                      <div class="projectinfo-headers">ID</div>
+                      <div class="projectinfo-id projectinfo-data">{{ project.ID }}</div>
+                    </li>
+                    <li>
+                      <div class="projectinfo-headers">Road</div>
+                      <div class="projectinfo-road projectinfo-data">{{ project.Road }}</div>
+                    </li>
+                    <li>
+                      <div class="projectinfo-headers">Name</div>
+                      <div class="projectinfo-name projectinfo-data">{{ project.Name }}</div>
+                    </li>
+                    <li>
+                      <div class="projectinfo-headers">Status</div>
+                      <div class="projectinfo-status projectinfo-data">{{ project.Status }}</div>
+                    </li>
+                    <li>
+                      <div class="projectinfo-headers">StartDate</div>
+                      <div class="projectinfo-startdate projectinfo-data">{{ project.StartDate }}</div>
+                    </li>
+                    <li>
+                      <div class="projectinfo-headers">EndDate</div>
+                      <div class="projectinfo-enddate projectinfo-data">{{ project.EndDate }}</div>
+                    </li>
+                    <li>
+                      <div class="projectinfo-headers">Contractor</div>
+                      <div class="projectinfo-contractor projectinfo-data">{{ project.Contractor }}</div>
+                    </li>
+                  </ul>
+                  <div class="table-section">
+                    <div class="project-subheader">Problems</div>
+                    <div class="projectinfo-table">
+                      <table>
+                        <tbody>
+                          <tr>
+                            <th>Author</th>
+                            <th>Text</th>
+                          </tr>
+                          <tr ng-repeat="problem in project.Problems">
+                            <td>{{ problem.Author }}</td>
+                            <td>{{ problem.Text }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="table-section">
+                    <div class="project-subheader">Comments</div>
+                    <div class="projectinfo-table">
+                      <table>
+                        <tbody>
+                          <tr>
+                            <th>Author</th>
+                            <th>Text</th>
+                          </tr>
+                          <tr ng-repeat="comment in project.Comments">
+                            <td>{{ comment.Author }}</td>
+                            <td>{{ comment.Text }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="table-section">
+                    <div class="project-subheader">Works</div>
+                    <div class="projectinfo-table">
+                      <table>
+                        <tbody>
+                          <tr>
+                            <th>Type</th>
+                            <th>SubContractors</th>
+                            <th>Status</th>
+                          </tr>
+                          <tr ng-repeat="work in project.Works">
+                            <td>{{ work.Type }}</td>
+                            <td>{{ work.SubContractors }}</td>
+                            <td>{{ work.Status }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- project end -->
+        </div>
+      </div>
+      <!-- information display end -->
+    </div>
+    <!-- <div class="footer">Footer</div> -->
+  </div>
+</body>
+
+</html>
